@@ -1,19 +1,26 @@
-name: Cloud Native Infra Deploy
+name: Mixed inputs
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: choice
+        description: Who to greet
+        options: 
+        - monalisa
+        - cschleiden
+      message:
+        required: true
+      use-emoji:
+        type: boolean
+        description: Include 🎉🤣 emojis
+      environment:
+        type: environment
 
 jobs:
-  build:
+  greet:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
-    - name: setup terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: "1.1.7"
-
-    - name: Terraform init
-      run: terraform init
+    - name: Send greeting
+      run: echo "${{ github.event.inputs.message }} ${{ fromJSON('["", "🥳"]')[github.event.inputs.use-emoji == 'true'] }} ${{ github.event.inputs.name }}"
